@@ -28,6 +28,7 @@ class MainViewController: UIViewController {
             if let city=txtCityName.text{
                 let vc = segue.destination as! TableViewController
                 vc.title = "5 day Weather Forecast in "+"\(city)"
+                vc.cityName = city
             }
         }
     }

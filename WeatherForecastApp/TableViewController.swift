@@ -10,19 +10,44 @@ import UIKit
 
 class TableViewController: UITableViewController {
 
+    var cityName: String!
+    var dataArray:NSArray!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        if let city=cityName
+        {
+            let getURLString:String = "http://samples.openweathermap.org/data/2.5/forecast?q="+"\(city)"+",uk&appid=b6907d289e10d714a6e88b30761fae22"
+            
+            self.parseTheJSONData(jsonURLStr: getURLString)
+        }
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    //parse the JSON Data
+    func parseTheJSONData(jsonURLStr:String) {
+        
+        //Do your parsing here and fill it into data_array
+        let task = URLSession.shared.dataTask(with: NSURL(string: jsonURLStr)! as URL, completionHandler: { (data, response, error) -> Void in
+            let responseStrInISOLatin = String(data: data!, encoding: String.Encoding.utf8)
+            let modifiedDataInUTF8Format = responseStrInISOLatin?.data(using: String.Encoding.utf8)
+            do{
+                let jsonObject = try JSONSerialization.jsonObject(with: modifiedDataInUTF8Format!, options: []) as! NSDictionary
+                
+                self.dataArray = jsonObject.object(forKey: "list") as! NSArray
+                
+                print(jsonObject)
+                
+            } catch {
+                print("json error: \(error.localizedDescription)")
+            }
+        })
+        task.resume()
     }
 
     // MARK: - Table view data source
